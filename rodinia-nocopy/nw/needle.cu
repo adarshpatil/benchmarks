@@ -155,7 +155,9 @@ void runTest( int argc, char** argv)
 
 	//cudaMemcpy(referrence_cuda, referrence, sizeof(int) * size, cudaMemcpyHostToDevice);
 	//cudaMemcpy(matrix_cuda, input_itemsets, sizeof(int) * size, cudaMemcpyHostToDevice);
-
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (int adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
     dim3 dimGrid;
 	dim3 dimBlock(BLOCK_SIZE, 1);
 	int block_width = ( max_cols - 1 )/BLOCK_SIZE;
@@ -179,7 +181,7 @@ void runTest( int argc, char** argv)
     cudaThreadSynchronize();
 	}
 
-
+    }
     //cudaMemcpy(output_itemsets, matrix_cuda, sizeof(int) * size, cudaMemcpyDeviceToHost);
   output_itemsets = input_itemsets;
 

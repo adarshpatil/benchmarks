@@ -122,9 +122,11 @@ main ( int argc, char *argv[] )
 
   //cudaMemcpy(d_m, m, matrix_dim*matrix_dim*sizeof(float),
   //    cudaMemcpyHostToDevice);
-
+  //REPEAT KERNEL FOR LONG GPU EXECUTION
+  for (int adp=0; adp<1000; adp++) {
+  printf("Starting GPU execution %d", adp+1);
   lud_cuda(m, matrix_dim);
-
+  }
   //cudaMemcpy(m, d_m, matrix_dim*matrix_dim*sizeof(float),
   //    cudaMemcpyDeviceToHost);
 

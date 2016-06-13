@@ -336,10 +336,13 @@ void run(int argc, char** argv)
 
 //     cudaMemcpy(MatrixPower, FilesavingPower, sizeof(float)*size, cudaMemcpyHostToDevice);
 //     cudaMemcpy(MatrixTemp[0], FilesavingTemp, sizeof(float)*size, cudaMemcpyHostToDevice);
-
-    int ret = compute_tran_temp(FilesavingPower,FilesavingTemp,grid_cols,grid_rows, \
+    int ret;
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (int adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
+    ret = compute_tran_temp(FilesavingPower,FilesavingTemp,grid_cols,grid_rows, \
 	 total_iterations,pyramid_height, blockCols, blockRows, borderCols, borderRows);
-	
+	}
     //cudaMemcpy(MatrixOut, MatrixTemp[ret], sizeof(float)*size, cudaMemcpyDeviceToHost);
 
 #ifdef GEM5_FUSION

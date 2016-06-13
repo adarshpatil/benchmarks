@@ -582,7 +582,9 @@ int main(int argc, char *argv []){
 	//====================================================================================================
 	//	LAUNCH
 	//====================================================================================================
-
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (int adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
 	for(common_change.frame_no=0; common_change.frame_no<frames_processed; common_change.frame_no++){
 
 		// Extract a cropped version of the first frame from the video file
@@ -609,7 +611,7 @@ int main(int argc, char *argv []){
 		fflush(NULL);
 
 	}
-
+    }
 	//====================================================================================================
 	//	PRINT FRAME PROGRESS END
 	//====================================================================================================

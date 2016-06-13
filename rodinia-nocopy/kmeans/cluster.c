@@ -105,13 +105,16 @@ int cluster(int      npoints,				/* number of data points */
     int    *membership;						/* which cluster a data point belongs to */
     float **tmp_cluster_centres;			/* hold coordinates of cluster centers */
 	int		i;
-
+    int     adp;
 	/* allocate memory for membership */
     membership = (int*) malloc(npoints * sizeof(int));
 
 #ifdef GEM5_FUSION
     m5_work_begin(0, 0);
 #endif
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
 	/* sweep k from min to max_nclusters to find the best number of clusters */
 	for(nclusters = min_nclusters; nclusters <= max_nclusters; nclusters++)
 	{
@@ -158,6 +161,7 @@ int cluster(int      npoints,				/* number of data points */
 		
 		deallocateMemory();							/* free device memory (@ kmeans_cuda.cu) */
 	}
+    }
 	
 #ifdef GEM5_FUSION
     m5_work_end(0, 0);

@@ -188,6 +188,9 @@ void BFSGraph( int argc, char** argv)
 
 	printf("Copied Everything to GPU memory\n");
 
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (int adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
 	// setup execution parameters
 	dim3  grid( num_of_blocks, 1, 1);
 	dim3  threads( num_of_threads_per_block, 1, 1);
@@ -214,7 +217,7 @@ void BFSGraph( int argc, char** argv)
 
 
 	printf("Kernel Executed %d times\n",k);
-
+    }
 	// copy result from device to host
 	//cudaMemcpy( h_cost, d_cost, sizeof(int)*no_of_nodes, cudaMemcpyDeviceToHost) ;
 

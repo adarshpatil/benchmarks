@@ -131,7 +131,9 @@ void bpnn_train_cuda(BPNN *net, float *eo, float *eh)
   //cudaMemcpy(input_hidden_cuda, input_weights_one_dim, (in + 1) * (hid + 1) * sizeof(float), cudaMemcpyHostToDevice);
 
 
-
+  //REPEAT KERNEL FOR LONG GPU EXECUTION
+  for (int adp=0; adp<500; adp++) {
+  printf("Starting GPU execution k1 %d", adp+1);
   bpnn_layerforward_CUDA<<< grid, threads >>>(net->input_units,
                                               (float*)0, // not used
                                               input_weights_one_dim,
@@ -140,6 +142,7 @@ void bpnn_train_cuda(BPNN *net, float *eo, float *eh)
 											  hid);
 
   cudaThreadSynchronize();
+  }
 
   cudaError_t error = cudaGetLastError();
 	if (error != cudaSuccess) {
@@ -180,7 +183,9 @@ void bpnn_train_cuda(BPNN *net, float *eo, float *eh)
   //cudaMemcpy(input_prev_weights_cuda, input_weights_prev_one_dim, (in + 1) * (hid + 1) * sizeof(float), cudaMemcpyHostToDevice);
   //cudaMemcpy(input_hidden_cuda, input_weights_one_dim, (in + 1) * (hid + 1) * sizeof(float), cudaMemcpyHostToDevice);
 
-
+  //REPEAT KERNEL FOR LONG GPU EXECUTION
+  for (int adp=0; adp<500; adp++) {
+  printf("Starting GPU execution k2 %d", adp+1);
   bpnn_adjust_weights_cuda<<< grid, threads >>>(net->hidden_delta,
 												hid,
                         net->input_units,
@@ -189,6 +194,8 @@ void bpnn_train_cuda(BPNN *net, float *eo, float *eh)
                         input_weights_prev_one_dim
 												);
   cudaThreadSynchronize();
+  }
+
   //cudaMemcpy(net->input_units, input_cuda, (in + 1) * sizeof(float), cudaMemcpyDeviceToHost);
   //cudaMemcpy(input_weights_one_dim, input_hidden_cuda, (in + 1) * (hid + 1) * sizeof(float), cudaMemcpyDeviceToHost);
 

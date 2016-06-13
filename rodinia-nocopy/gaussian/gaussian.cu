@@ -92,10 +92,12 @@ int main(int argc, char *argv[])
 #ifdef GEM5_FUSION
     m5_work_begin(0, 0);
 #endif
-
+    //REPEAT KERNEL FOR LONG GPU EXECUTION
+    for (int adp=0; adp<1000; adp++) {
+    printf("Starting GPU execution %d", adp+1);
     // run kernels
     ForwardSub();
-
+    }
 #ifdef GEM5_FUSION
     m5_work_end(0, 0);
 #endif

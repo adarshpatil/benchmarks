@@ -105,7 +105,7 @@ GEM5_GPU_BENCHMARKS ?= ../..
 INTERMED_FILES := *.cpp*.i *.cpp*.ii *.cu.c *.cudafe*.* *.fatbin.c *.cu.cpp *.linkinfo *.cpp_o core
 COMPUTETARGET ?= sm_20
 
-#GEM5GPUFLAGS  := -DGEM5_FUSION
+GEM5GPUFLAGS  := -DGEM5_FUSION
 
 MEM_DEBUG ?= 0
 ifeq ($(MEM_DEBUG),1)

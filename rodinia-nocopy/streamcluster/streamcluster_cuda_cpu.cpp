@@ -35,7 +35,9 @@ using namespace std;
 
 /* higher ITER --> more likely to get correct # of centers */
 /* higher ITER also scales the running time almost linearly */
-#define ITER 3 						// iterate ITER* k log k times; ITER >= 1
+//#define ITER 3 						// iterate ITER* k log k times; ITER >= 1
+// adp continue until we run ITER* k log k times iterations without improvement
+#define ITER 10
 
 //#define PRINTINFO 			//comment this out to disable output
 #define PROFILE 					// comment this out to disable instrumentation code
@@ -479,17 +481,7 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
   long k2 = k1 + bsize;
   if( pid == nproc-1 ) k2 = points->num;
 
-#ifdef PRINTINFO
-  if( pid == 0 )
-    {
-      printf("Starting Kmedian procedure\n");
-      printf("%i points in %i dimensions\n", numberOfPoints, ptDimension);
-    }
-#endif
 
-#ifdef ENABLE_THREADS
-  pthread_barrier_wait(barrier);
-#endif
 
   float myhiz = 0;
   for (long kk=k1;kk < k2; kk++ ) {
@@ -498,9 +490,6 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
   }
   hizs[pid] = myhiz;
 
-#ifdef ENABLE_THREADS  
-  pthread_barrier_wait(barrier);
-#endif
 
   for( int i = 0; i < nproc; i++ )   {
     hiz += hizs[i];
@@ -525,10 +514,7 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
   if( pid == 0 ) shuffle(points);
   cost = pspeedy(points, z, &k, pid, barrier);
 
-#ifdef PRINTINFO
-  if( pid == 0 )
-    printf("thread %d: Finished first call to speedy, cost=%lf, k=%i\n",pid,cost,k);
-#endif
+
   i=0;
   /* give speedy SP chances to get at least kmin/2 facilities */
   while ((k < kmin)&&(i<SP)) {
@@ -536,18 +522,10 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
     i++;
   }
 
-#ifdef PRINTINFO
-  if( pid==0)
-    printf("thread %d: second call to speedy, cost=%lf, k=%d\n",pid,cost,k);
-#endif 
+
   /* if still not enough facilities, assume z is too high */
   while (k < kmin) {
-#ifdef PRINTINFO
-    if( pid == 0 ) {
-      printf("%lf %lf\n", loz, hiz);
-      printf("Speedy indicates we should try lower z\n");
-    }
-#endif
+
     if (i >= SP) {hiz=z; z=(hiz+loz)/2.0; i=0;}
     if( pid == 0 ) shuffle(points);
     cost = pspeedy(points, z, &k, pid, barrier);
@@ -567,19 +545,13 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
       }
     }
 
-#ifdef ENABLE_THREADS
-  pthread_barrier_wait(barrier);
+// adp - pushed work_begin deeper 
+#ifdef GEM5_FUSION
+    m5_work_begin(0, 0);
 #endif
 
   while(1) {
-  
-#ifdef PRINTINFO
-    if( pid==0 )
-      {
-	printf("loz = %lf, hiz = %lf\n", loz, hiz);
-	printf("Running Local Search...\n");
-      }
-#endif
+
     /* first get a rough estimate on the FL solution */
     //    pthread_barrier_wait(barrier);		
     lastcost = cost;
@@ -590,12 +562,7 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
     if (((k <= (1.1)*kmax)&&(k >= (0.9)*kmin))||
 	((k <= kmax+2)&&(k >= kmin-2))) {
 
-#ifdef PRINTINFO
-      if( pid== 0)
-	{
-	  printf("Trying a more accurate local search...\n");
-	}
-#endif
+
       /* may need to run a little longer here before halting without
 	 improvement */
 	 
@@ -622,10 +589,12 @@ float pkmedian(Points *points, long kmin, long kmax, long* kfinal,
       { 
 	break;
       }
-#ifdef ENABLE_THREADS
-    pthread_barrier_wait(barrier);
-#endif
+
   }
+
+#ifdef GEM5_FUSION
+    m5_work_end(0, 0);
+#endif
 
   //clean up...
   if( pid==0 ) {
@@ -695,18 +664,15 @@ void copycenters(Points *points, Points* centers, long* centerIDs, long offset)
 void* localSearchSub(void* arg_) {
   pkmedian_arg_t* arg= (pkmedian_arg_t*)arg_;
 
-#ifdef GEM5_FUSION
-    m5_work_begin(0, 0);
-#endif
+//#ifdef GEM5_FUSION
+//    m5_work_begin(0, 0);
+//#endif
 
-  //REPEAT KERNEL FOR LONG GPU EXECUTION
-  for (int adp=0; adp<100; adp++) {
   pkmedian(arg->points,arg->kmin,arg->kmax,arg->kfinal,arg->pid,arg->barrier);
-  }
 
-#ifdef GEM5_FUSION
-    m5_work_end(0, 0);
-#endif
+//#ifdef GEM5_FUSION
+//    m5_work_end(0, 0);
+//#endif
 
   return NULL;
 }
