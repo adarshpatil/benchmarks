@@ -20,7 +20,6 @@ all: %.o
 
 %.o: $(CSRC)
 	g++ -c $(CSRC) $(OPTS)
-
 clean:
 	rm -f *.o *.cu.cpp $(BUILD_EXE)
 
