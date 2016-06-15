@@ -28,6 +28,7 @@
 extern "C" {
 void m5_work_begin(uint64_t workid, uint64_t threadid);
 void m5_work_end(uint64_t workid, uint64_t threadid);
+void m5_dump_stats(uint64_t ns_delay, uint64_t ns_period);
 }
 #endif
 
@@ -181,6 +182,7 @@ void BFSGraph( int argc, char** argv)
 
 
 #ifdef GEM5_FUSION
+    m5_dump_stats(0, 0);
     m5_work_begin(0, 0);
 #endif
 
