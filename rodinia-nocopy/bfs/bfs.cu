@@ -191,7 +191,7 @@ void BFSGraph( int argc, char** argv)
 	printf("Copied Everything to GPU memory\n");
 
     //REPEAT KERNEL FOR LONG GPU EXECUTION
-    for (int adp=0; adp<1000; adp++) {
+    for (int adp=0; adp<1000000; adp++) {
     printf("Starting GPU execution %d", adp+1);
 	// setup execution parameters
 	dim3  grid( num_of_blocks, 1, 1);
