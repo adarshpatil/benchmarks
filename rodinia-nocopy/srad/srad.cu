@@ -85,7 +85,7 @@ main( int argc, char** argv)
             dummyArray[i+24][j+24] = blosum62[i][j];
          }
 
-    for ( k=1; k<6000; k++) {
+    for ( k=1; k<20000; k++) {
         for ( i=1; i<47; i++)
             for ( j=1; j<47; j++)
                 dummyArray[i][j] += (dummyArray[i-1][j] + dummyArray[i+1][j]) * (dummyArray[i][j+1] + dummyArray[i][j-1]);
