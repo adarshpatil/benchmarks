@@ -72,8 +72,11 @@ main( int argc, char** argv)
 	{-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4,  1}
     };
 
-    int dummyArray[48][48];
+    int *dummyArray[48];
     int i,j,k,ctr;
+    for (i=0;i<48;i++)
+        dummyArray[i] = (int *)malloc( 48 * sizeof(int) );
+
     for ( i=0; i<24; i++)
         for ( j=0; j<24; j++){
             dummyArray[i][j] = blosum62[i][j];
@@ -112,6 +115,9 @@ main( int argc, char** argv)
     for ( i=1; i<48; i++)
         fprintf(stdout, "%d ", dummyArray[23][i]);
     fprintf(stdout, "\nEnd of dummy output\n");
+
+    for (i=0;i<48;i++)
+        free(dummyArray[i]);
 
     // END ADARSH DUMMY LOOP
 
