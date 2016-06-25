@@ -70,7 +70,8 @@ main( int argc, char** argv)
     // do some column totals and row totals
     // Finally, print row totals so compiler doesnt discard the loop as no use
     int *dummyArray[48];
-    int i,j,k,ctr;
+    int i,j,k,l,ctr;
+    for (l=0;l<2;l++) {
     for (i=0;i<48;i++)
         dummyArray[i] = (int *)malloc( 48 * sizeof(int) );
 
@@ -115,7 +116,7 @@ main( int argc, char** argv)
 
     for (i=0;i<48;i++)
         free(dummyArray[i]);
-
+    }
     // END OF ADARSH DUMMY LOOP
 
     runTest( argc, argv);
