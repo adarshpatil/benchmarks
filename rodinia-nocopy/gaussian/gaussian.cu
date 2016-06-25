@@ -53,6 +53,62 @@ unsigned int totalKernelTime = 0;
 int main(int argc, char *argv[])
 {
     int verbose = 1;
+
+    // BEGIN ADARSH DUMMY LOOP TO INCREASE FAST FORWARD
+    // look at the above blosum62 array
+    // copy the array into dummyArray and do some stencil operations
+    // do some column totals and row totals
+    // Finally, print row totals so compiler doesnt discard the loop as no use
+    int *dummyArray[48];
+    int i,j,k,ctr;
+
+    for (i=0;i<48;i++)
+        dummyArray[i] = (int *)malloc( 48 * sizeof(int) );
+
+    for ( i=0; i<24; i++)
+        for ( j=0; j<24; j++){
+            dummyArray[i][j] = blosum62[i][j];
+            dummyArray[i+24][j] = blosum62[i][j];
+            dummyArray[i][j+24] = blosum62[i][j];
+            dummyArray[i+24][j+24] = blosum62[i][j];
+         }
+
+    for ( k=1; k<20000; k++) {
+        for ( i=1; i<47; i++)
+            for ( j=1; j<47; j++)
+                dummyArray[i][j] += (dummyArray[i-1][j] + dummyArray[i+1][j]) * (dummyArray[i][j+1] + dummyArray[i][j-1]);
+
+        for ( i=1; i<47; i++)
+            for ( j=1; j<47; j++)
+                dummyArray[i][j] += (dummyArray[i-1][j] * dummyArray[i+1][j]) + (dummyArray[i][j+1] * dummyArray[i][j-1]);
+
+        for (i=0;i<48; i++) {
+            ctr = dummyArray[0][i];
+            for ( j=1;j<48; j++) {
+                ctr += dummyArray[j][i];
+                dummyArray[j][i] = ctr;
+            }
+        }
+
+		for (i=0;i<48; i++) {
+		    ctr = dummyArray[i][0];
+		    for ( j=1;j<48; j++) {
+		        ctr += dummyArray[i][j];
+		        dummyArray[i][j] = ctr;
+		    }
+        }
+    }
+
+    fprintf(stdout, "Begin dummy output\n");
+    for ( i=1; i<48; i++)
+        fprintf(stdout, "%d ", dummyArray[23][i]);
+    fprintf(stdout, "\nEnd of dummy output\n");
+
+    for (i=0;i<48;i++)
+        free(dummyArray[i]);
+
+    // END OF ADARSH DUMMY LOOP
+
     if (argc < 2) {
         printf("Usage: gaussian matrix.txt [-q]\n\n");
         printf("-q (quiet) suppresses printing the matrix and result values.\n");
